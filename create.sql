@@ -32,7 +32,7 @@ CREATE TABLE episodes(
 );
 
 
-drop table anime;
+
 
 
 

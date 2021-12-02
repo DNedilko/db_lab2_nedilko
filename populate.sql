@@ -59,4 +59,4 @@ INNER JOIN episodes
 ON information.id = episodes.an_id;
 
 
-
+drop table anime;

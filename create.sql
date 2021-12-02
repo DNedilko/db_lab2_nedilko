@@ -1,31 +1,40 @@
 CREATE TABLE anime(
-	id INT NOT NULL PRIMARY KEY,
-	name VARCHAR(150),
-	genre VARCHAR(200),
+	name VARCHAR(500),
 	type VARCHAR(50),
-	episodes VARCHAR(10) NOT NULL,
-	rating FLOAT,
-	members INT NOT NULL
+	episodes INT,
+	rating FLOAT NOT NULL,
+	members INT
 );
 
 
 --creating tables according to 4NF
-Create TABLE anime_general(
-	id INT NOT NULL PRIMARY KEY REFERENCES anime_names(anime_id),
-	type INT NOT NULL,
-	members INT NOT NULL,
-	rates FLOAT,
-	episodes VARCHAR(10) NOT NULL,
-	FOREIGN KEY (anime_type) REFERENCES anime_types(type_id)
-)
 
-
-CREATE TABLE anime_names(
-	ani_name VARCHAR(150),
-	anime_id INT NOT NULL primary key
+CREATE TABLE types(
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(50)
+);
+Create TABLE information(
+	id SERIAL PRIMARY KEY ,
+	name varchar,
+	type INT NOT NULL REFERENCES types(id)
 );
 
-CREATE TABLE anime_types(
-	type_id SERIAL PRIMARY KEY,
-	ani_type VARCHAR(50)
+CREATE TABLE rates(
+	id INT NOT NULL REFERENCES information(id),
+	value FLOAT NOT NULL
 );
+
+
+CREATE TABLE episodes(
+	an_id INT NOT NULL references information(id),
+	episodes INT NOT NULL,
+	members INT NOT NULL
+);
+
+
+drop table anime;
+
+
+
+
+

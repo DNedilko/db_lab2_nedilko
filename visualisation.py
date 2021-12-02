@@ -7,32 +7,36 @@ database = 'DB_lab2'
 host = 'localhost'
 port = '5432'
 
+
 query_1 = '''
-SELECT avg(rates) as avg_per_type, anime_types.type
-FROM anime_types
-INNER JOIN anime_general
-ON anime_general.type = anime_types.id
-GROUP BY anime_general.type, anime_types.type;
+SELECT count(information.type) as num_of_records, types.name
+FROM information
+INNER JOIN types
+ON information.type=types.id
+group by types.name;
 '''
 
 query_2 = '''
-SELECT COUNT(anime_general.type) as types_num, anime_types.type
-FROM anime_general
-INNER JOIN 
-anime_types
-ON anime_general.type = anime_types.id
-GROUP BY anime_types.type;
+SELECT episodes, information.name
+FROM information
+INNER JOIN episodes
+ON information.id = episodes.an_id
+ORDER BY members DESC
+LIMIT 10;
 '''
 
 
 # У мене не достатньо підходящі дані для такого
 query_3 = '''
-SELECT distinct(rates), episodes
-FROM anime_general
-WHERE episodes <> 'Unknown'
-Order BY episodes desc, rates ASC
-limit 10;
+SELECT AVG(value), types.name, type
+FROM information
+INNER JOIN rates
+USING(id)
+INNER JOIN types
+ON types.id = information.type
+GROUP BY types.name, type ;
 '''
+
 
 conn = psycopg2.connect(user=username, password=password, dbname=database, host=host, port=port)
 
@@ -41,51 +45,53 @@ with conn:
 
     cur.execute(query_1)
     types = []
-    avg = []
+    num = []
 
     for row in cur:
-        avg.append(row[0])
         types.append(row[1])
+        num.append(row[0])
 
     x_range = range(len(types))
 
     figure, (bar_ax, pie_ax, graph_ax) = plt.subplots(1, 3)
-    bar = bar_ax.bar(x_range, avg, label='Total')
-    bar_ax.set_title('Середній рейтинг по кожному типу аніме')
-    bar_ax.set_xlabel('Аніме')
-    bar_ax.set_ylabel('Середній рейтинг')
+    bar = bar_ax.bar(x_range, num, label='Type')
+    bar_ax.set_title('Кількість записів\n для кожного типу \nу базі даних')
+    bar_ax.set_xlabel('тип')
+    bar_ax.set_ylabel('кільість записів')
     bar_ax.set_xticks(x_range)
     bar_ax.set_xticklabels(types)
 
+
     cur.execute(query_2)
-    counts = []
-    type = []
+    episodes = []
+    names = []
 
     for row in cur:
-        counts.append(row[0])
-        type.append(row[1])
+        episodes.append(row[0])
+        names.append(row[1])
+    pie_ax.pie(episodes, labels=names, autopct='%1.1f%%')
+    pie_ax.set_title('Кількість серій\n для топ 10 аніме \nза кількістю персонажів')
 
-    x_range = range(len(type))
-
-    pie_ax.pie(counts, labels=type, autopct='%1.1f%%')
-    pie_ax.set_title('Відсоткове співвідношення кожного типу у базі даних')
 
     cur.execute(query_3)
-    rates = []
-    episodes = []
+    avg = []
+    types = []
+    tn = []
 
     for row in cur:
-        rates.append(row[0])
-        episodes.append(row[1])
+        avg.append(row[0])
+        types.append(row[1])
+        tn.append(row[2])
 
-    graph_ax.plot(episodes, rates, marker='o')
+    graph_ax.plot(types, avg, marker='o')
 
-    graph_ax.set_xlabel('Кількість епізодів')
-    graph_ax.set_ylabel('Рейтинг')
-    graph_ax.set_title('Графік залежності рейтингу від кількості епізодів')
+    graph_ax.set_xlabel('Тип аніме')
+    graph_ax.set_ylabel('Середній рейтинг')
+    graph_ax.set_title('Графік залежності \nрейтингу аніме\n від його типу')
 
-    for ep, rt in zip(episodes, rates):
-        graph_ax.annotate(rt, xy=(ep, rt), xytext=(7, 2), textcoords='offset points')
+
+    for t, a in zip(tn, avg):
+        graph_ax.annotate(a, xy=(t, a), xytext=(7, 2), textcoords='offset points')
 
 mng = plt.get_current_fig_manager()
 mng.resize(1400, 600)

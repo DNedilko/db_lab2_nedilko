@@ -1,62 +1,61 @@
-COPY anime(name,type,episodes,rating,members)
-FROM 'F:\DB introd data\fixed.csv'
-DELIMITER ';'
-CSV HEADER;
+-- COPY anime(name,type,episodes,rating,members)
+-- FROM 'F:\DB introd data\fixed.csv'
+-- DELIMITER ';'
+-- CSV HEADER;
 
 
-INSERT INTO types(name)
-SELECT DISTINCT(type)
-FROM anime
-WHERE type is NOT NULL;
 
 select * from types;
 select * from anime;
 select * from episodes;
+select * from ratings;
 
-
+INSERT INTO types(type_name) VALUES('TV');
+INSERT INTO types(type_name) VALUES('Movie');
+INSERT INTO types(type_name) VALUES('OVA');
+INSERT INTO types(type_name) VALUES('Special');
+select * from types;
 
 -- select * from information 
 -- INNER join types
 -- ON types.id = information.type
 
-INSERT INTO information(name, type)
-SELECT anime.name, types.id
-FROM anime
-INNER JOIN types
-ON types.name = anime.type;
+INSERT INTO anime(anime_name, type_id)
+VALUES('K-On! Movie',2);
+INSERT INTO anime(anime_name, type_id)
+VALUES('Fullmetal Alchemist: Brotherhood',1);
+INSERT INTO anime(anime_name, type_id)
+VALUES('Gintama?',1);
+INSERT INTO anime(anime_name, type_id)
+VALUES('Ginga Eiyuu Densetsu',3);
+INSERT INTO anime(anime_name, type_id)
+VALUES('Mushishi Special: Hihamukage',4);
+INSERT INTO anime(anime_name, type_id)
+VALUES('Howl no Ugoku Shiro',2);
+select * from anime;
 
-
-delete from episodes;
-
-
-INSERT INTO episodes(an_id, episodes, members)
-SELECT DISTINCT(information.id), episodes, members 
-FROM information
-INNER JOIN anime
-USING(name)
-ORDER BY information.id;
-
+INSERT INTO episodes(anime_id, episodes, members)
+VALUES(1, 1, 115252);
+INSERT INTO episodes(anime_id, episodes, members)
+VALUES(2, 51, 600384);
+INSERT INTO episodes(anime_id, episodes, members)
+VALUES(3, 201, 336376);
+INSERT INTO episodes(anime_id, episodes, members)
+VALUES(4, 101, 80679);
+INSERT INTO episodes(anime_id, episodes, members)
+VALUES(5, 1, 49036);
 select * from episodes;
 
-INSERT INTO rates(id,value)
-SELECT DISTINCT(information.id), rating 
-FROM information
-INNER JOIN anime
-USING(name)
-
-SELECT * FROM information;
-SELECT * FROM rates;
-SELECT * FROM episodes;
-SELECT * FROM types;
-
-SELECT information.id, information.name, types.name, episodes.episodes, episodes.members, rates.value
-FROM information
-INNER JOIN types 
-ON information.type = types.id
-INNER JOIN rates
-ON information.id = rates.id
-INNER JOIN episodes
-ON information.id = episodes.an_id;
-
-
-drop table anime;
+INSERT INTO ratings(anime_id, rate_value)
+VALUES(1, 8.15);
+INSERT INTO ratings(anime_id, rate_value)
+VALUES(2, 9);
+INSERT INTO ratings(anime_id, rate_value)
+VALUES(3, 7.45);
+INSERT INTO ratings(anime_id, rate_value)
+VALUES(4, 5.6);
+INSERT INTO ratings(anime_id, rate_value)
+VALUES(5, 8.42);
+INSERT INTO ratings(anime_id, rate_value)
+VALUES(6, 10);
+select * from ratings;

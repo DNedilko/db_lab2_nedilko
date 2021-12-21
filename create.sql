@@ -17,6 +17,7 @@ Create TABLE anime( -- creating main table anime: anime_id, anime_name, type_id(
 );
 
 CREATE TABLE ratings( -- table ratings: anime_id(same id as anime_id from anime), rate_values(current rating), update_date(current date of update)
+	id SERIAL PRIMARY KEY,
 	anime_id INT NOT NULL REFERENCES anime(anime_id),
 	rate_value FLOAT NOT NULL,
 	update_date TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
